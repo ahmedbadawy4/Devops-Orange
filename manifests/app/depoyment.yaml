@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: toystore
+    environment: dev
+  name: toystore
+  #namespace: dev
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 33%
+      maxSurge: 100%
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: toystore
+  template:
+    metadata:
+      labels:
+        environment: dev
+        app: toystore
+    spec:
+      serviceAccountName: satoystore
+      containers:
+      - name: toystore
+        image: devopsahmed/toystore:3
+        imagePullPolicy: Always
+        env:
+        - name: spring.datasource.password
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: spring.datasource.password
+        - name: spring.datasource.username
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: spring.datasource.username
+        - name: spring.datasource.url
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: spring.datasource.url
+        ports:
+        - containerPort: 8080
+          name: http
