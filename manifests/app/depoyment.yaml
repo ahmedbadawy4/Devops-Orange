@@ -30,14 +30,14 @@ spec:
         env:
         - name: spring.datasource.password
           valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: spring.datasource.password
+            secretKeyRef:
+              name: mysql-secret
+              key: password
         - name: spring.datasource.username
           valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: spring.datasource.username
+            secretKeyRef:
+              name: mysql-secret
+              key: username
         - name: spring.datasource.url
           valueFrom:
             configMapKeyRef:
