@@ -3,36 +3,36 @@
   - name: Deploy database volume
     k8s:
       state: present
-      definition: "{{ lookup('../manifests/database/', 'pvc.yaml') | from_yaml }}"
+      definition: "{{ lookup('template', './manifests/database/pvc.yaml') | from_yaml }}"
       validate_certs: no
       namespace:  "{{ NAMESPACE }}"
   - name: Deploy database service
     k8s:
       state: present
-      definition: "{{ lookup('../manifests/database/', 'service.yaml') | from_yaml }}"
+      definition: "{{ lookup('template', './manifests/database/service.yaml') | from_yaml }}"
       validate_certs: no
       namespace:  "{{ NAMESPACE }}"
   - name: Deploy database deployment
     k8s:
       state: present
-      definition: "{{ lookup('../manifests/database/', 'deployment.yaml') | from_yaml }}"
+      definition: "{{ lookup('template', './manifests/database/deployment.yaml') | from_yaml }}"
       validate_certs: no
       namespace:  "{{ NAMESPACE }}"
   - name: Deploy toystore configmap
     k8s:
       state: present
-      definition: "{{ lookup('../manifests/app/', 'config-map.yaml') | from_yaml }}"
+      definition: "{{ lookup('template', './manifests/app/config-map.yaml') | from_yaml }}"
       validate_certs: no
       namespace:  "{{ NAMESPACE }}"
   - name: Deploy toystore service-account
     k8s:
       state: present
-      definition: "{{ lookup('../manifests/app/', 'svc-account.yaml') | from_yaml }}"
+      definition: "{{ lookup('template', './manifests/app/svc-account.yaml') | from_yaml }}"
       validate_certs: no
       namespace:  "{{ NAMESPACE }}"
   - name: Deploy toystore service
     k8s:
       state: present
-      definition: "{{ lookup('../manifests/app/', 'service.yaml') | from_yaml }}"
+      definition: "{{ lookup('template', './manifests/app/service.yaml') | from_yaml }}"
       validate_certs: no
       namespace:  "{{ NAMESPACE }}"
