@@ -4,14 +4,14 @@ pipeline {
                    }
 
     stages {
-        stage('Checkout proj') {
+     /*   stage('Checkout proj') {
         steps {
             
             git branch: 'master',
                 credentialsId: 'Github',
-                url: 'https://github.com/ahmedbadawy4/Devops-Orange.git'
+                url: 'https://github.com/ahmedmisbah-ole/Devops-Orange'
         }
-    }
+    } */
         stage('Build') {
             steps {
                 echo 'Building..'

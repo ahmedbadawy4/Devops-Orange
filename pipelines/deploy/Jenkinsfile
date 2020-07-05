@@ -6,14 +6,14 @@ pipeline {
            string(name: 'NAMESPACE', defaultValue: '', description: 'the target namespace')
            }
     stages {
-        stage('Checkout project') {
+  /*      stage('Checkout project') {
         steps {
             
             git branch: 'master',
                 credentialsId: 'Github',
-                url: 'https://github.com/ahmedbadawy4/Devops-Orange.git'
+                url: 'https://github.com/ahmedmisbah-ole/Devops-Orange'
         }
-    }
+    } */
         
       stage('Deploy') {
          steps {

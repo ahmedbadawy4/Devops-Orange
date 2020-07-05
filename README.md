@@ -3,7 +3,7 @@
 
 - [About](#About)
 - [Prerequisites](#Prerequisites)
-- [setup new environment](#new_environment)
+- [setup](#setup)
 - [Setup CI/CD on top of Minikube](#minikube)
 
 ## About 
@@ -134,13 +134,33 @@ These instructions will help you to setup new CI/CD tools and configure it to de
    - Add nexus or Dockerhub credentials.
    - Set the docker images (app and MySQL) version `(it could be dynamic for example ${build_NUMBER} or static)` and the repository URL(Nexus or Docker_hub) in the second stage.
    - Build the pipeline **the images should be pushed to your registry**.
+
 ### 2- Deploy Toy0store pipeline in Jenkins:
    - Open Jenkins UI and create a pipeline Toy0store-deploy point to the pipeline script in `pipelines/deploy/Jenkinsfile`.
    - Configure the agent access to the target cluster by adding ~/.kube/config and `kubectl` command is installed.
    - set the image tag name for the app and database deployment files. 
-      > this step should be automatically 
+      > this step should be automated.
+   - Convert database credentials to base64:
+     `echo -n 'USERNAME' | base64` and  `echo -n 'PASSWORD' | base64`
+   - Create a secret to store database credentials by adding the generated base64 in the below `secret.yaml` 
+     
+    ```
+     apiVersion: v1
+     kind: Secret
+     metadata:
+       name: mysql-secret
+     type: Opaque
+     data:
+       username: <base64 for username>
+       password: <base64 for password>
+     ```
+     
    - Build the pipeline and provide the target `namespace` as a build parameter.
    - Run `kubectl get all -n <target-namespace>` to get the details about the deployment.
    - Access the application **http://<minikube_ip>:30001**
      > an SSL and domain can be added with ingress controller configurations.
-## To DO List:
+## To-DO-List:
+  - Adding SSL and domain with ingress controller configurations.
+  - Configure Nexus to package and store the java dependencies, jars, and Docker images.
+  - Add sonarqube and configure it to test the code and generate reports.
+  - Adding a more automatic and efficient strategy to database backup and restore during release deployment (using ansible for example).
