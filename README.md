@@ -6,7 +6,7 @@
 - [Setup new environment](#)
 - [Setup CI/CD on top of Minikube (using helm)](#)
 - [Setup build and deploy Toy0store application](#)
-- [## To-DO-List](#)
+- [To-DO-List](#)
 
 ## About 
 - This is the private mirror repository from [Toy0Store](https://github.com/ahmedmisbah-ole/Devops-Orange.git) application repository.
