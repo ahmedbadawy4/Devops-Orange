@@ -1,0 +1,33 @@
+pipeline {      
+         agent {
+                   label "slave"
+                   }
+           parameters {
+           string(name: 'NAMESPACE', defaultValue: '', description: 'the target namespace')
+           }
+    stages {
+        stage('Checkout project') {
+        steps {
+            
+            git branch: 'master',
+                credentialsId: 'Github',
+                url: 'https://github.com/ahmedbadawy4/Devops-Orange.git'
+        }
+    }
+        
+      stage('Deploy') {
+         steps {
+             script{
+                     
+                     sh """ 
+                     echo "${params.NAMESPACE}" 
+                     cd ${WORKSPACE}/manifests
+                     kubectl apply -f database/ --namespace "${params.NAMESPACE}"
+                     kubectl apply -f app/ -n "${params.NAMESPACE}"
+                     """
+                     
+                }
+            }  
+        } 
+    }
+}

@@ -1,0 +1,49 @@
+pipeline {
+         agent {
+                   label "slave"
+                   }
+
+    stages {
+        stage('Checkout proj') {
+        steps {
+            
+            git branch: 'master',
+                credentialsId: 'Github',
+                url: 'https://github.com/ahmedbadawy4/Devops-Orange.git'
+        }
+    }
+        stage('Build') {
+            steps {
+                echo 'Building..'
+                sh """
+                cd ./Toy0Store 
+                mvn clean package
+                pwd
+                echo ${WORKSPACE}
+                """
+            }
+        }
+        stage(' Build Toy0store Docker image') {
+            steps {  
+                script{
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials'){
+                     sh "cp ${WORKSPACE}/Toy0Store/target/Toy0Store-1.0.jar ${WORKSPACE}/Toy0Store/src/main/docker/"
+                     img = docker.build("devopsahmed/toystore:v4","${WORKSPACE}/Toy0Store/src/main/docker/")
+                     img.push()
+              }
+            }
+        }
+        }
+
+        stage(' Build Toy0store DB docker image') {
+            steps {  
+                script{
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials'){
+                     img = docker.build("devopsahmed/toystore-db:v1","${WORKSPACE}/Database/")
+                     img.push()
+              }
+            }
+        }
+        }
+    }
+}

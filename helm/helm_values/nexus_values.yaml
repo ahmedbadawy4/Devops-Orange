@@ -1,0 +1,31 @@
+nexus:
+  imageName: sonatype/nexus3
+  imageTag: 3.24.0
+  env:
+    - name: install4jAddVmParams
+      value: "-Xms1200M -Xmx1200M -XX:MaxDirectMemorySize=2G -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+    - name: NEXUS_SECURITY_RANDOMPASSWORD
+      value: "false"
+  dockerPort: 5003
+  nexusPort: 8081
+  service:
+    type: NodePort
+    ports:
+    - port: 8081
+      nodePort: 32233
+           
+
+nexusProxy:
+  env:
+    nexusDockerHost: 100.25.132.68
+    nexusHttpHost: 100.25.132.68
+  enabled: true
+  imageName: quay.io/travelaudience/docker-nexus-proxy
+  imageTag: 2.5.0
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  storageClass: "managed-nfs-storage"
+  storageSize: 20Gi
+
