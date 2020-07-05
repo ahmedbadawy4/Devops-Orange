@@ -32,7 +32,7 @@ pipeline {
            stage ('Deploy') {
            steps {
                script{
-                   sh "cd playbooks/ && ansible-playbook  toystore-deployment.yml --extra-vars \"NAMESPACE=${parms.NAMESPACE}\""
+                   sh "cd playbooks/ && ansible-playbook  toystore-deployment.yml --extra-vars \"NAMESPACE=${params.NAMESPACE}\""
                }
            }
        } 
