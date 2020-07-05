@@ -15,7 +15,8 @@ spec:
         app: mysql
     spec:
       containers:
-      - image: mysql:5.6
+      - image: dbImageID
+        #image: mysql:5.6
         name: mysql
         env:
           # Use secret in real usage

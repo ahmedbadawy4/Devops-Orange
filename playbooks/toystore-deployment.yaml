@@ -1,23 +1,5 @@
 - hosts: localhost
   tasks:
-  - name: Deploy database volume
-    k8s:
-      state: present
-      definition: "{{ lookup('template', '../manifests/database/pvc.yaml') | from_yaml }}"
-      validate_certs: no
-      namespace:  "{{ NAMESPACE }}"
-  - name: Deploy database service
-    k8s:
-      state: present
-      definition: "{{ lookup('template', '../manifests/database/service.yaml') | from_yaml }}"
-      validate_certs: no
-      namespace:  "{{ NAMESPACE }}"
-  - name: Deploy database deployment
-    k8s:
-      state: present
-      definition: "{{ lookup('template', '../manifests/database/deployment.yaml') | from_yaml }}"
-      validate_certs: no
-      namespace:  "{{ NAMESPACE }}"
   - name: Deploy toystore configmap
     k8s:
       state: present

@@ -3,7 +3,9 @@ pipeline {
                    label "slave"
                    }
            parameters {
-           string(name: 'NAMESPACE', defaultValue: '', description: 'the target namespace')
+           string(name: 'NAMESPACE', defaultValue: '', description: 'the target namespace'),
+           string(name: 'dbImageID', defaultValue: '', description: 'Database docker image ID'),
+           string(name: 'appImageID', defaultValue: '', description: 'Toy0Store app docker image ID')
            }
     stages {
   /*      stage('Checkout project') {
@@ -32,7 +34,16 @@ pipeline {
            stage ('Deploy') {
            steps {
                script{
-                   sh "cd ${WORKSPACE}/playbooks/ && ansible-playbook  toystore-deployment.yaml --extra-vars \"NAMESPACE=${params.NAMESPACE}\""
+                   sh """
+                   echo ${params.appImageID}
+                   echo ${params.dbImageID}
+                   sed -i s/dbImageID/${params.dbImageID}/ ${WORKSPACE}/manifests/database/deployment.yaml
+                   sed -i s/appImageID/${params.appImageID}/ ${WORKSPACE}/manifests/app/deployment.yaml
+                   cd ${WORKSPACE}/playbooks/
+                   ansible-playbook  database-deployment.yaml --extra-vars \"ImageID=${params.ImageID}\ \"NAMESPACE=${params.NAMESPACE}\""
+                   sleep 20
+                   ansible-playbook  toystore-deployment.yaml --extra-vars \"ImageID=${params.ImageID}\ \"NAMESPACE=${params.NAMESPACE}\""
+                   """
                }
            }
        } 
