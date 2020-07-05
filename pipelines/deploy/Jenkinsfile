@@ -2,11 +2,10 @@ pipeline {
          agent {
                    label "slave"
                    }
-           parameters {
-           string(name: 'NAMESPACE', defaultValue: '', description: 'the target namespace'),
-           string(name: 'dbImageID', defaultValue: '', description: 'Database docker image ID'),
-           string(name: 'appImageID', defaultValue: '', description: 'Toy0Store app docker image ID')
-           }
+           parameters {string(name: 'NAMESPACE', defaultValue: '', description: 'the target namespace')}
+           parameters {string(name: 'dbImageID', defaultValue: '', description: 'Database docker image ID')}
+           parameters {string(name: 'appImageID', defaultValue: '', description: 'Toy0Store app docker image ID')}
+           
     stages {
   /*      stage('Checkout project') {
         steps {
