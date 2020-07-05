@@ -65,7 +65,7 @@
    - Check minikube status `minikube status`
    - Get Cluster_IP `kubectl cluster-info`
 
-### 3- install Helm and add tiller:
+### 3- Install Helm and add tiller:
 
     ```
     curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
