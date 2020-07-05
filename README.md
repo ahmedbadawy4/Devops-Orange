@@ -6,7 +6,7 @@
 - [Setup new environment](#)
 - [Setup CI/CD on top of Minikube (using helm)](#)
 - [Setup build and deploy Toy0store application](#)
-- 
+- [## To-DO-List](#)
 
 ## About 
 - This is the private mirror repository from [Toy0Store](https://github.com/ahmedmisbah-ole/Devops-Orange.git) application repository.
@@ -48,7 +48,7 @@
    kubectl version --short 
    ```
    - Install Docker
-      > some cases you have to install a hypervisor like Qemu or Virtualbox.
+      > Some cases you have to install a hypervisor like Qemu or Virtualbox.
    ```
    sudo apt-get update && \sudo apt-get install docker.io -y
    ```
@@ -62,8 +62,8 @@
      * On EC2 without hypervisor 'as a root' run `minikube start --vm-driver=none`
      * General with hypervisor run `minikube start --driver <hypervisor>`
       > minikube start --driver Virtualbox
-   - check minikube status `minikube status`
-   - get Cluster_IP `kubectl cluster-info`
+   - Check minikube status `minikube status`
+   - Get Cluster_IP `kubectl cluster-info`
 
 ### 3- install Helm and add tiller:
 
@@ -75,15 +75,15 @@
     helm init --service-account tiller
     kubectl --namespace kube-system get pods | grep tiller
     ```
-### 4- deploy the NFS provisioner on minikube:
+### 4- Setup the NFS provisioner on minikube:
 
     - Edit the nfs <NFS_IP> in `manifests/nfs-provisioner/deployment.yaml`
       > in our case it will be the ubuntu server_IP because we installed it locally
-    - deploy the provisioner `kubectl apply -f manifests/nfs-provisioner/`
+    - Deploy the provisioner `kubectl apply -f manifests/nfs-provisioner/`
 
  ## Setup CI/CD on top of Minikube (using helm)
 
- ###  1- deploy Jenkins:
+ ###  1- Setup Jenkins:
    - Create new namespace `kubectl create ns build` 
    - Search for jenkins in helm `helm search jenkins`
    - Get the values file  `helm inspect values stable/jenkins > jenkins_values.yaml` or better use the ready file in `helm/helm_values/jenkins_values.yaml`
@@ -107,7 +107,7 @@
 `printf $(kubectl get secret --namespace build jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo`
   > also it can be easier deployed using ansible-galaxy role in this [link](https://galaxy.ansible.com/geerlingguy/jenkins)
     
-### 2- deploy Nexus:
+### 2- Setup Nexus:
    - Search for nexus in helm `helm search nexus`
    - Get the values file  `helm inspect values stable/sonatype-nexus > nexus_values.yaml` or better use the ready file in `helm/helm_values/nexus_values.yaml`
    - Change the configuration in `helm/helm_values/nexus_values.yaml` for example:
@@ -136,12 +136,11 @@
    - Add nexus or Dockerhub credentials.
    - Set the docker images tags (app and MySQL) version `(it could be dynamic for example ${build_NUMBER} or static)` and the repository URL(Nexus or Docker_hub) in the second stage. ==> I will add this in **to-do-list**.
    - Build the pipeline **the images should be pushed to your registry**.
-### 2- Deploy Toy0store application in minikube using Ansible:
 
 ### 3- Deploy Toy0store application in minikube using Jenkins and ansible:
    - Open Jenkins UI and create a pipeline Toy0store-deploy point to the pipeline script in `pipelines/deploy/Jenkinsfile`.
    - Configure the agent access to the target cluster by adding ~/.kube/config and `kubectl` command is installed.
-   - set the image tag name for the app and database deployment files. 
+   - Set the image tag name for the app and database deployment files. 
       > this step should be automated.
    - Convert database credentials to base64:
      `echo -n 'USERNAME' | base64` and  `echo -n 'PASSWORD' | base64`
