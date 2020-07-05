@@ -32,7 +32,6 @@ pipeline {
            stage ('Deploy') {
            steps {
                script{
-                   def image_id = registry + ":$BUILD_NUMBER"
                    sh "cd playbooks/ && ansible-playbook  toystore-deployment.yml --extra-vars \"NAMESPACE=${parmsNAMESPACE}\""
                }
            }
