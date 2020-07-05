@@ -16,7 +16,18 @@ spec:
     spec:
       containers:
       - image: dbImageID
-        #image: mysql:5.6
+        #image: devopsahmed/toystore-db
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - |
+                    check_seed_data=$(mysql -u [username] -p toystore -e "select * from products")
+                    if [[ -z ${check_seed_data} ]]; then
+                        mysql toystore < ./toystore-test.sql
+                    fi
         name: mysql
         env:
           # Use secret in real usage

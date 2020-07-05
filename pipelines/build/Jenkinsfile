@@ -2,7 +2,11 @@ pipeline {
          agent {
                    label "slave"
                    }
-
+ environment {
+        NEXUS_URL = '<minikubeIP:NodePort>'
+        NEXUS_CREDENTIALS  = 'nexus-credentials' // should added in jenkins credentials
+        NEXUS_REGESTRY = '<Nexus host docker repository>''
+    }
     stages {
      /*   stage('Checkout proj') {
         steps {
@@ -32,8 +36,18 @@ pipeline {
                      img.push()
               }
             }
+        //    script{
+        //            docker.withRegistry('${NEXUS_URL}', '${NEXUS_CREDENTIALS}'){
+        //             sh "cp ${WORKSPACE}/Toy0Store/target/Toy0Store-1.0.jar ${WORKSPACE}/Toy0Store/src/main/docker/"
+        //             img = docker.build("${NEXUS_REGESTRY}/toystore:${BUILD_NUMBER}","${WORKSPACE}/Toy0Store/src/main/docker/")
+        //             img.push()
+        //      }
+        //    }
         }
         }
+
+
+
 
         stage(' Build Toy0store DB docker image') {
             steps {  

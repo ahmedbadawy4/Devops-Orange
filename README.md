@@ -105,6 +105,7 @@
 - Access jenkins on **http://<cluster_IP>:NodePort/login** to get Jenkins admin password run:
    
 `printf $(kubectl get secret --namespace build jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo`
+  > also it can be easier deployed using ansible-galaxy role in this [link](https://galaxy.ansible.com/geerlingguy/jenkins)
     
 ### 2- deploy Nexus:
    - Search for nexus in helm `helm search nexus`
@@ -133,11 +134,11 @@
    - Open Jenkins UI and create a pipeline Toy0store-build and configure it to get the pipeline script from git repo [link](https://github.com/ahmedbadawy4/Orange-lab-DevOps.git) with script path `./pipelines/build/Jenkinsfile`.
    - Configure Jenkins agents `in my case helm deployed 3 templates [slave, maven, and python]`.
    - Add nexus or Dockerhub credentials.
-   - Set the docker images (app and MySQL) version `(it could be dynamic for example ${build_NUMBER} or static)` and the repository URL(Nexus or Docker_hub) in the second stage.
+   - Set the docker images tags (app and MySQL) version `(it could be dynamic for example ${build_NUMBER} or static)` and the repository URL(Nexus or Docker_hub) in the second stage. ==> I will add this in **to-do-list**.
    - Build the pipeline **the images should be pushed to your registry**.
 ### 2- Deploy Toy0store application in minikube using Ansible:
 
-### 3- Deploy Toy0store application in minikube using Jenkins:
+### 3- Deploy Toy0store application in minikube using Jenkins and ansible:
    - Open Jenkins UI and create a pipeline Toy0store-deploy point to the pipeline script in `pipelines/deploy/Jenkinsfile`.
    - Configure the agent access to the target cluster by adding ~/.kube/config and `kubectl` command is installed.
    - set the image tag name for the app and database deployment files. 
@@ -156,12 +157,14 @@
        username: <base64 for username>
        password: <base64 for password>
      ```
+      > Also see documentation [here](https://kubernetes.io/docs/concepts/configuration/secret/)
      
-   - Build the pipeline and provide the target `namespace` as a build parameter.
+   - Build the pipeline with 3 parameters (target `namespace`, databade docker image, and app docker image).
    - Run `kubectl get all -n <target-namespace>` to get the details about the deployment.
    - Access the application **http://<minikube_ip>:30001**
      > an SSL and domain can be added with ingress controller configurations.
 ## To-DO-List:
+  - Allow user to choose commit to build using Github plugin.
   - Adding SSL and domain with ingress controller configurations.
   - Configure Nexus to package and store the java dependencies, jars, and Docker images.
   - Add sonarqube and configure it to test the code and generate reports.
