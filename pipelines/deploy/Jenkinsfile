@@ -39,9 +39,9 @@ pipeline {
                    sed -i s/dbImageID/${params.dbImageID}/ ${WORKSPACE}/manifests/database/deployment.yaml
                    sed -i s/appImageID/${params.appImageID}/ ${WORKSPACE}/manifests/app/deployment.yaml
                    cd ${WORKSPACE}/playbooks/
-                   ansible-playbook  database-deployment.yaml --extra-vars \"ImageID=${params.ImageID}\ \"NAMESPACE=${params.NAMESPACE}\""
+                   ansible-playbook  database-deployment.yaml --extra-vars \"ImageID=${params.ImageID} "NAMESPACE=${params.NAMESPACE}\""
                    sleep 20
-                   ansible-playbook  toystore-deployment.yaml --extra-vars \"ImageID=${params.ImageID}\ \"NAMESPACE=${params.NAMESPACE}\""
+                   ansible-playbook  toystore-deployment.yaml --extra-vars \"ImageID=${params.ImageID} "NAMESPACE=${params.NAMESPACE}\""
                    """
                }
            }
