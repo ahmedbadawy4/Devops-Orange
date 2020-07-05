@@ -1,14 +1,16 @@
 
 ## 📝 Table of Contents
 
-- [About](#About)
-- [Prerequisites](#Prerequisites)
-- [setup](#setup)
-- [Setup CI/CD on top of Minikube](#minikube)
+- [About](#)
+- [Prerequisites](#)
+- [Setup new environment](#)
+- [Setup CI/CD on top of Minikube (using helm)](#)
+- [Setup build and deploy Toy0store application](#)
+- 
 
 ## About 
-
-These instructions will help you to setup new CI/CD tools and configure it to deploy this [repo](https://github.com/ahmedmisbah-ole/Devops-Orange).
+- This is the private mirror repository from [Toy0Store](https://github.com/ahmedmisbah-ole/Devops-Orange.git) application repository.
+- These instructions will help to setup new CI/CD tools and configure it to deploy this [repo](https://github.com/ahmedmisbah-ole/Devops-Orange.git).
 
 ## Prerequisites
 - Ubuntu server 18.04
@@ -63,7 +65,7 @@ These instructions will help you to setup new CI/CD tools and configure it to de
    - check minikube status `minikube status`
    - get Cluster_IP `kubectl cluster-info`
 
-### 3- install Helm
+### 3- install Helm and add tiller:
 
     ```
     curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
@@ -73,7 +75,7 @@ These instructions will help you to setup new CI/CD tools and configure it to de
     helm init --service-account tiller
     kubectl --namespace kube-system get pods | grep tiller
     ```
-### 4- deploy the NFS provisioner
+### 4- deploy the NFS provisioner on minikube:
 
     - Edit the nfs <NFS_IP> in `manifests/nfs-provisioner/deployment.yaml`
       > in our case it will be the ubuntu server_IP because we installed it locally
@@ -81,7 +83,7 @@ These instructions will help you to setup new CI/CD tools and configure it to de
 
  ## Setup CI/CD on top of Minikube (using helm)
 
- ###  1- deploy Jenkins
+ ###  1- deploy Jenkins:
    - Create new namespace `kubectl create ns build` 
    - Search for jenkins in helm `helm search jenkins`
    - Get the values file  `helm inspect values stable/jenkins > jenkins_values.yaml` or better use the ready file in `helm/helm_values/jenkins_values.yaml`
@@ -92,6 +94,11 @@ These instructions will help you to setup new CI/CD tools and configure it to de
   nodePort: "For Example 32232"
   storageClass: "managed-nfs-storage"
   size: "8Gi"
+  plugins:
+  - git
+  - pipeline
+  - CloudBees Docker Build and Publish
+  - GitHub
 ``` 
    - Deploy jenkins with the new values file `helm install stable/jenkins --values helm/helm_values/jenkins_values.yaml --name jenkin --namespace build`
    
@@ -99,7 +106,7 @@ These instructions will help you to setup new CI/CD tools and configure it to de
    
 `printf $(kubectl get secret --namespace build jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo`
     
-### 2- deploy Nexus
+### 2- deploy Nexus:
    - Search for nexus in helm `helm search nexus`
    - Get the values file  `helm inspect values stable/sonatype-nexus > nexus_values.yaml` or better use the ready file in `helm/helm_values/nexus_values.yaml`
    - Change the configuration in `helm/helm_values/nexus_values.yaml` for example:
@@ -115,27 +122,22 @@ These instructions will help you to setup new CI/CD tools and configure it to de
    - Deploy nexus with the new values file:
     
      `helm install stable/sonatype-nexus --values helm/helm_values/nexus_values.yaml --name nexus --namespace build`
-      - Access jenkins after waiting at least 3 minutes on **http://<cluster_IP>:NodePort** with default credentials
+      - Access jenkins after waiting 2~3 minutes on **http://<cluster_IP>:NodePort** with default credentials
 
 ## Setup build and deploy [Toy0store](https://github.com/ahmedmisbah-ole/Devops-Orange) application
 #### - notes:
- - I made a mirror from the Toy0store to make it private in my Github account [link](https://github.com/ahmedbadawy4/Devops-Orange) because I added `manifests` for k8s and [`Dockerfiles`](https://github.com/ahmedbadawy4/Devops-Orange/blob/master/Toy0Store/src/main/docker/) for application and database.
+ - I made a mirror from the Toy0store to make it private in my Github account [link](https://github.com/ahmedbadawy4/Devops-Orange.git) because I added `manifests` for k8s, `Dockerfiles`, CI/CD pipelines, custom `helm` values, NFS provisioner, and the documentation in README.md.
 
- - now there are 2 repos:
-   
-   1- **https://github.com/ahmedbadawy4/Devops-Orange.git** and it contains the Toy0store application, k8s manifests, and Dockerfile
-   
-   2- **https://github.com/ahmedbadawy4/Orange-lab-DevOps.git** and it contains the CI/CD pipelines for (build or deploy) the Toy0store app, custom helm values, NFS provisioner, and the documentation in README.md.
-
-### 1- Build Toy0store pipeline in Jenkins:
+### 1- Build Toy0store Docker images using Jenkins:
 
    - Open Jenkins UI and create a pipeline Toy0store-build and configure it to get the pipeline script from git repo [link](https://github.com/ahmedbadawy4/Orange-lab-DevOps.git) with script path `./pipelines/build/Jenkinsfile`.
    - Configure Jenkins agents `in my case helm deployed 3 templates [slave, maven, and python]`.
    - Add nexus or Dockerhub credentials.
    - Set the docker images (app and MySQL) version `(it could be dynamic for example ${build_NUMBER} or static)` and the repository URL(Nexus or Docker_hub) in the second stage.
    - Build the pipeline **the images should be pushed to your registry**.
+### 2- Deploy Toy0store application in minikube using Ansible:
 
-### 2- Deploy Toy0store pipeline in Jenkins:
+### 3- Deploy Toy0store application in minikube using Jenkins:
    - Open Jenkins UI and create a pipeline Toy0store-deploy point to the pipeline script in `pipelines/deploy/Jenkinsfile`.
    - Configure the agent access to the target cluster by adding ~/.kube/config and `kubectl` command is installed.
    - set the image tag name for the app and database deployment files. 
